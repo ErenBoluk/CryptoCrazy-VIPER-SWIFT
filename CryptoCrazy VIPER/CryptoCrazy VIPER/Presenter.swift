@@ -11,28 +11,32 @@ import Foundation
 protocol AnyPresenter {
     var router : AnyRouter? {get set}
     var interoctor : AnyInteractor? {get set}
-    var view : anyView? {get set}
+    var view : AnyView? {get set}
         
-    func interacorDidDowloadCrypto(result: Result<[Crypto],Error>)
+    func interactorDidDownloadCrypto(result: Result<[Crypto],Error>)
 }
 
-class CryptoProtocol: AnyPresenter {
+class CryptoPresenter: AnyPresenter {
     
-    var interoctor: AnyInteractor?
+    var interoctor: AnyInteractor? {
+        didSet{
+            interoctor?.downloadCryptos()
+        }
+    }
     
-    var view: anyView?
+    var view: AnyView?
     
     var router: AnyRouter?
     
     
-    func interacorDidDowloadCrypto(result: Result<[Crypto], Error>) {
+    func interactorDidDownloadCrypto(result: Result<[Crypto], Error>) {
+        print(result)
         switch result {
         case .success(let cryptos):
-            // view.update
-            print("update")
-        case .failure(let error):
+            view?.update(with: cryptos)
+        case .failure( _ ):
             // view.update error
-            print("error")
+            view?.update(with: "Try Again Later ...")
         }
         
     }
